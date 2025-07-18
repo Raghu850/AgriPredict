@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Profit Prediction</title>
+    <style>
+        /* Set html and body to 100% height to stretch the background */
+        html, body {
+            height: 100%; /* Make html and body 100% height */
+            margin: 0; /* Remove default margin */
+            padding: 0; /* Remove default padding */
+            overflow: auto; /* Allow scrolling if necessary */
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('https://thumbs.dreamstime.com/b/farmers-tending-to-rice-paddies-lush-green-fields-illustrating-rich-tapestry-asian-agriculture-farmers-tending-to-321941269.jpg');
+            background-size: cover; /* Cover the entire body */
+            background-position: center; /* Center the background image */
+            background-repeat: no-repeat; /* Prevent the background from repeating */
+            background-attachment: fixed; /* Keep the background fixed during scrolling */
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 400px;
+            max-width: 90%;
+            margin: 50px auto; /* Center the container and add top margin */
+            position: relative; /* Relative positioning for the container */
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        input[type="number"], select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0 20px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px; /* Added margin for spacing */
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .result {
+            margin-top: 20px;
+            background-color: #f1f1f1;
+            padding: 15px;
+            border-radius: 4px;
+            text-align: center;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>CROP PROFIT PREDICTION</h2>
+        <form id="profitForm" action="/prediction" method="POST">
+            <div class="form-container">
+                <label for="year">Year</label>
+                <input type="number" id="year" name="year" required>
+        
+                <label for="temperature">Temperature (°C)</label>
+                <input type="number" id="temperature" name="temperature" step="0.1" required>
+        
+                <label for="rainfall">Rainfall (mm)</label>
+                <input type="number" id="rainfall" name="rainfall" step="0.1" required>
+        
+                <label for="humidity">Humidity (%)</label>
+                <input type="number" id="humidity" name="humidity" step="0.1" required>
+        
+                <label for="supply_indicator">Supply Indicator</label>
+                <input type="number" id="supply_indicator" name="supply_indicator" required>
+        
+                <label for="demand_indicator">Demand Indicator</label>
+                <input type="number" id="demand_indicator" name="demand_indicator" required>
+        
+                <label for="crop_type">Crop Type</label>
+                <select id="crop_type" name="crop_type">
+                    <option value="Wheat">Wheat</option>
+                    <option value="Rice">Rice</option>
+                    <option value="Maize">Maize</option>
+                    <option value="Soybean">Soybean</option>
+                    <option value="Barley">Barley</option>
+                </select>
+        
+                <button type="submit">Predict</button>
+            </div>
+        </form>
+
+        {% if predicted_price and predicted_category %}
+        <div class="result">
+            <p>Predicted Price: ₹{{ predicted_price }}</p>
+            <p>Price Category: {{ predicted_category }}</p>
+        </div>
+        {% endif %}
+
+        <button onclick="goToReview()">Go to Review</button> <!-- Added Review button -->
+        <button onclick="goBack()">Go Back</button> <!-- Added Go Back button -->
+    </div>
+
+    <script>
+        function goToReview() {
+            window.location.href = "{{ url_for('reviews') }}"; // Redirect to reviews route
+        }
+
+        function goBack() {
+            window.location.href = "{{ url_for('login') }}"; // Redirect back to login
+        }
+    </script>
+</body>
+</html>
