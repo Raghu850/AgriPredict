@@ -62,30 +62,32 @@ def login():
         if role == 'user':
             user = conn.execute('SELECT * FROM users WHERE username = ?', (username,)).fetchone()
             if user is None:
-                flash('Account not found!', 'error')
+                flash('User account not found!', 'error')
             elif check_password_hash(user['password'], password):
                 session['username'] = username
                 flash('User login successful!', 'success')
+                conn.close()
                 return redirect(url_for('prediction'))
             else:
-                flash('Incorrect password!', 'error')
+                flash('Incorrect password for user!', 'error')
 
         elif role == 'admin':
             admin = conn.execute('SELECT * FROM admins WHERE username = ?', (username,)).fetchone()
             if admin is None:
-                flash('Account not found!', 'error')
+                flash('Admin account not found!', 'error')
             elif check_password_hash(admin['password'], password):
                 session['admin_username'] = username
                 flash('Admin login successful!', 'success')
+                conn.close()
                 return redirect(url_for('admin_dashboard'))
             else:
-                flash('Incorrect password!', 'error')
+                flash('Incorrect password for admin!', 'error')
 
         conn.close()
 
     return render_template('login.html')
 
-# Registration Route for users
+# Registration Route (ONLY for users)
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -98,7 +100,7 @@ def register():
         try:
             conn.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, hashed_password))
             conn.commit()
-            flash('Registration successful! You can now log in.', 'success')
+            flash('User registration successful! You can now log in.', 'success')
             return redirect(url_for('login'))
         except sqlite3.IntegrityError:
             flash('Username already exists! Please choose a different username.', 'error')
@@ -107,11 +109,11 @@ def register():
 
     return render_template('register.html')
 
-# Prediction Route (accessible to logged-in users)
+# Prediction Route (accessible to logged-in users only)
 @app.route('/prediction', methods=['GET', 'POST'])
 def prediction():
     if 'username' not in session:
-        flash('You need to log in first!', 'error')
+        flash('You need to log in as a user first!', 'error')
         return redirect(url_for('login'))
 
     if request.method == 'POST':
@@ -123,15 +125,15 @@ def prediction():
         demand_indicator = request.form['demand_indicator']
         crop_type = request.form['crop_type']
 
-        # Example prediction logic (you can replace this with your model)
-        predicted_price = 5000  # Replace with actual prediction logic
+        # Dummy prediction logic
+        predicted_price = 5000  
         predicted_category = "High" if predicted_price > 3000 else "Low"
 
         return render_template('prediction.html', predicted_price=predicted_price, predicted_category=predicted_category)
 
     return render_template('prediction.html')
 
-# Admin Dashboard to view all reviews
+# Admin Dashboard (accessible only to logged-in admins)
 @app.route('/admin_dashboard')
 def admin_dashboard():
     if 'admin_username' not in session:
